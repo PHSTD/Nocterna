@@ -7,7 +7,7 @@
 # 컨벤션
 
 ## 코드 컨벤션
-```
+```cs
 public int PublicField;
 public static int MyStaticField;
 
