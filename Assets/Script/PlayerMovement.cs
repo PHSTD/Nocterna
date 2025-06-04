@@ -125,15 +125,36 @@ public class PlayerMovement : MonoBehaviour
         {
             if (contact.normal.y > 0.5f)
             {
-                m_isGrounded = true;
-                m_animator.SetBool("isJump", false);
-                break;
+                if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Monster"))
+                {
+                    m_isGrounded = true;
+                    m_animator.SetBool("isJump", false);
+                    break;
+                }
+            }
+            
+            
+            // 몬스터 공격 처리
+            if (collision.collider.CompareTag("Monster"))
+            {
+                TakeDamage(); // 데미지를 받거나, 게임 오버 처리
             }
         }
+    }
+    
+    private void TakeDamage()
+    {
+        Debug.Log("몬스터에게 공격당함!");
+        // 예: 체력 감소 / 게임 오버 UI 호출
+        // GameManager.Instance.GameOver();
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        m_isGrounded = false;
+        if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Monster"))
+        {
+            m_isGrounded = false;
+        }
     }
+    
 }
