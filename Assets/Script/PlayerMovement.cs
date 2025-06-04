@@ -2,11 +2,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDamageable
 {
     private float m_moveSpeed = 5f;
     private float m_sitSpeed = 2f;
     private float m_jumpForce = 8f;
+    private float m_knockbackForce = 10f;
 
     private Rigidbody2D m_rb;
     private CapsuleCollider2D m_capsule;
@@ -137,16 +138,21 @@ public class PlayerMovement : MonoBehaviour
             // 몬스터 공격 처리
             if (collision.collider.CompareTag("Monster"))
             {
-                TakeDamage(); // 데미지를 받거나, 게임 오버 처리
+                TakeDamage(10); // 데미지를 받거나, 게임 오버 처리
             }
         }
     }
     
-    private void TakeDamage()
+    public void TakeDamage(int damage)
     {
-        Debug.Log("몬스터에게 공격당함!");
-        // 예: 체력 감소 / 게임 오버 UI 호출
-        // GameManager.Instance.GameOver();
+        m_animator.SetTrigger("hurt");
+        ApplyKnockback(transform.position);
+    }
+    
+    public void ApplyKnockback(Vector2 origin)
+    {
+         Vector2 direction = (m_rb.position - origin).normalized;
+         m_rb.AddForce(direction * m_knockbackForce, ForceMode2D.Impulse);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -156,5 +162,5 @@ public class PlayerMovement : MonoBehaviour
             m_isGrounded = false;
         }
     }
-    
+
 }
